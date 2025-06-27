@@ -42,15 +42,34 @@ class Layer {
     }
 }
 
+class MLP {
+    List<Layer> layers;
+
+    public MLP(int[] layerSizes) {
+        this.layers = new ArrayList<>(layerSizes.length);
+        for(int i = 0; i < layerSizes.length - 1; i++) {
+            layers.add(new Layer(layerSizes[i], layerSizes[i + 1]));
+        }
+    }
+
+    public List<Value> forward(List<Value> inputs) {
+        List<Value> outputs = inputs;
+        for(Layer layer : layers) {
+            outputs = layer.forward(outputs);
+        }
+        return outputs;
+    }
+}
+
 public class Main {
     public static void main(String[] args) {
         List<Value> a = new ArrayList<>();
         a.add(new Value(2.0));
         a.add(new Value(3.0));
-        Neuron n = new Neuron(2);
-        System.out.println(n.forward(a));
+        a.add(new Value(1.0));
 
-        Layer l = new Layer(2, 3);
-        System.out.println(l.forward(a));
+        int[] layerSizes = new int[]{3, 4, 4, 1};
+        MLP nn = new MLP(layerSizes);
+        System.out.println(nn.forward(a));
     }
 }
