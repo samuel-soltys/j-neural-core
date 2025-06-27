@@ -3,7 +3,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-
 class Neuron {
     private List<Value> w;
     private Value b;
@@ -24,6 +23,25 @@ class Neuron {
     }
 }
 
+class Layer {
+    private List<Neuron> neurons;
+    
+    public Layer(int numInputs, int numNeurons) {
+        this.neurons = new ArrayList<>(numNeurons);
+        for (int i = 0; i < numNeurons; i++) {
+            neurons.add(new Neuron(numInputs));
+        }
+    }
+
+    public List<Value> forward(List<Value> inputs) {
+        List<Value> outputs = new ArrayList<>();
+        for (Neuron neuron : neurons) {
+            outputs.add(neuron.forward(inputs));
+        }
+        return outputs;
+    }
+}
+
 public class Main {
     public static void main(String[] args) {
         List<Value> a = new ArrayList<>();
@@ -31,5 +49,8 @@ public class Main {
         a.add(new Value(3.0));
         Neuron n = new Neuron(2);
         System.out.println(n.forward(a));
+
+        Layer l = new Layer(2, 3);
+        System.out.println(l.forward(a));
     }
 }
