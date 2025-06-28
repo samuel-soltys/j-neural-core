@@ -1,27 +1,34 @@
-import java.util.Arrays;
+package models;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class Main {
-    public static void main(String[] args) {
-        // Sample 2D input points, labels 0 or 1
-        double[][] X = {
-            {2.0, 3.0, 1.0},
-            {1.0, 0.0, -1.0},
-            {3.0, 1.0, 0.5},
-            {-1.0, -2.0, 0.0},
-            {0.0, 2.0, 3.0},
-            {-3.0, -1.0, -2.0}
-        };
-        int[] y = {1, 0, 1, 0, 1, 0};
-        
-        // Initializing the model
-        int[] layers = new int[]{3, 4, 4, 1};
-        MLP model = new MLP(layers);
+import mlp.MLP;
+import mlp.Value;
+
+public class BinaryClassifier {
+    private final MLP model;
+    
+    public BinaryClassifier(int[] layers) {
+        this.model = new MLP(layers);
+    }
+
+    public void train(double[][] X, int[] y) {
+        if (X.length != y.length) {
+            throw new IllegalArgumentException("Input and output arrays must have the same length.");
+        }
+        if (X.length == 0 || X[0].length == 0) {
+            throw new IllegalArgumentException("Input array must not be empty.");
+        }
+        if (y.length == 0) {
+            throw new IllegalArgumentException("Output array must not be empty.");
+        }
 
         // Training the model
         double learningRate = 0.05;
         int epochs = 100;
+        
         for (int epoch = 0; epoch < epochs; epoch++) {
             double totalLoss = 0.0;
             // Go through each input
@@ -55,11 +62,13 @@ public class Main {
                     param.data -= learningRate * param.grad;
                 }
             }
-            if (epoch % 1 == 0) {
+            if (epoch % 10 == 0 || epoch == epochs - 1) {
                 System.out.printf("Epoch %d, Loss: %.8f%n", epoch, totalLoss);
             }
         }
-        
+    }
+    
+    public void test(double[][] X, int[] y) {
         // Test trained model
         for (int i = 0; i < X.length; i++) {
             List<Value> inputs = new ArrayList<>();

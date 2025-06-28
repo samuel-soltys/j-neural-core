@@ -1,9 +1,11 @@
+package mlp;
+
 import java.util.List;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-class Value {
+public class Value {
     public double data;
     public double grad;
     
