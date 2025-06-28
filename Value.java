@@ -38,10 +38,10 @@ class Value {
     }
     
     // Pow function only for double powers
-    public Value pow(double other) {
-        Value result = new Value(Math.pow(this.data, other), Set.of(this), "pow");
+    public Value pow(double p) {
+        Value result = new Value(Math.pow(this.data, p), Set.of(this), "pow");
         result.backward = () -> {
-            this.grad += (other * Math.pow(this.data, other - 1)) * result.grad;
+            this.grad += (p * Math.pow(this.data, p - 1)) * result.grad;
         };
         return result;
     }
