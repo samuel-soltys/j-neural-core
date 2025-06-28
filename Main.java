@@ -15,12 +15,16 @@ class Neuron {
         this.b = new Value(0.0);
     }
 
-    public Value forward(List<Value> inputs) {
+    public Value forward(List<Value> inputs, boolean isOutputLayer) {
         Value z = b;
         for (int i = 0; i < w.size(); i++) {
             z = z.add(w.get(i).mul(inputs.get(i)));
         }
-        return z.relu();
+        if (isOutputLayer) {
+            return z.sigmoid();  // use sigmoid in output layer only
+        } else {
+            return z.relu();    // use ReLU in hidden layers
+        }
     }
 
     public List<Value> parameters() {
@@ -42,8 +46,9 @@ class Layer {
 
     public List<Value> forward(List<Value> inputs) {
         List<Value> outputs = new ArrayList<>();
-        for (Neuron neuron : neurons) {
-            outputs.add(neuron.forward(inputs));
+        for (int i = 0; i < neurons.size(); i++) {
+            boolean isOutputLayer = (i == neurons.size() - 1);
+            outputs.add(neurons.get(i).forward(inputs, isOutputLayer));
         }
         return outputs;
     }
@@ -109,7 +114,7 @@ public class Main {
 
         // Training the model
         double learningRate = 0.05;
-        int epochs = 1000;
+        int epochs = 100;
         for (int epoch = 0; epoch < epochs; epoch++) {
             double totalLoss = 0.0;
             // Go through each input
@@ -124,11 +129,13 @@ public class Main {
                 List<Value> outs = model.forward(inputs);
                 Value prediction = outs.get(0);
                 
-                // Compute mean squared error loss = (prediction - groundTruth)^2 
-                // Consider using Sigmoid activation + Cross-entropy loss
+                // Cross-entropy loss 
                 Value groundTruth = new Value(y[i]);
-                Value diff = prediction.add(groundTruth.mul(new Value(-1)));
-                Value loss = diff.pow(2);
+                Value loss = groundTruth.mul(prediction.log()).add(
+                    new Value(1.0).add(groundTruth.mul(new Value(-1.0))).mul(
+                        new Value(1.0).add(prediction.mul(new Value(-1.0))).log()
+                    )
+                ).mul(new Value(-1.0));
 
                 totalLoss += loss.data;
 

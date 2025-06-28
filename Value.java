@@ -56,11 +56,26 @@ class Value {
         return result;
     }
     
-    // Activation function
+    public Value log() {
+        Value result = new Value(Math.log(this.data), Set.of(this), "log");
+        result.backward = () -> {
+            this.grad += (1.0 / this.data) * result.grad;
+        };
+        return result;
+    }
+
+    // Activation functions
     public Value relu() {
         Value result = new Value((this.data < 0) ? 0 : this.data, Set.of(this), "ReLU");
         result.backward = () -> {
             this.grad += ((result.data > 0) ? 1 : 0) * result.grad;
+        };
+        return result;
+    }
+    public Value sigmoid() {
+        Value result = new Value(1.0 / (1.0 + Math.exp(-this.data)), Set.of(this), "sigmoid");
+        result.backward = () -> {
+            this.grad += result.data * (1 - result.data) * result.grad;
         };
         return result;
     }
