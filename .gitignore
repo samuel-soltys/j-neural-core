@@ -1,1 +1,11 @@
+# Maven build output
+/target/
+
+
+# Standard Java build output
+/bin/
 *.class
+
+# OS junk
+.DS_Store
+Thumbs.db
