@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -81,17 +82,79 @@ class MLP {
         }
         return params;
     }
+
+    public void zeroGrad() {
+        for (Value p : parameters()) {
+            p.grad = 0.0;
+        }
+    }
 }
 
 public class Main {
     public static void main(String[] args) {
-        List<Value> a = new ArrayList<>();
-        a.add(new Value(2.0));
-        a.add(new Value(3.0));
-        a.add(new Value(1.0));
+        // Sample 2D input points, labels 0 or 1
+        double[][] X = {
+            {2.0, 3.0, 1.0},
+            {1.0, 0.0, -1.0},
+            {3.0, 1.0, 0.5},
+            {-1.0, -2.0, 0.0},
+            {0.0, 2.0, 3.0},
+            {-3.0, -1.0, -2.0}
+        };
+        int[] y = {1, 0, 1, 0, 1, 0};
+        
+        // Initializing the model
+        int[] layers = new int[]{3, 4, 4, 1};
+        MLP model = new MLP(layers);
 
-        int[] layerSizes = new int[]{3, 4, 4, 1};
-        MLP nn = new MLP(layerSizes);
-        System.out.println(nn.forward(a));
+        // Training the model
+        double learningRate = 0.05;
+        int epochs = 1000;
+        for (int epoch = 0; epoch < epochs; epoch++) {
+            double totalLoss = 0.0;
+            // Go through each input
+            for (int i = 0; i < X.length; i++) {
+                // Wrap inputs in Value objects
+                List<Value> inputs = new ArrayList<>();
+                for (double d : X[i]) {
+                    inputs.add(new Value(d));
+                }
+
+                // Forward pass
+                List<Value> outs = model.forward(inputs);
+                Value prediction = outs.get(0);
+                
+                // Compute mean squared error loss = (prediction - groundTruth)^2 
+                // Consider using Sigmoid activation + Cross-entropy loss
+                Value groundTruth = new Value(y[i]);
+                Value diff = prediction.add(groundTruth.mul(new Value(-1)));
+                Value loss = diff.pow(2);
+
+                totalLoss += loss.data;
+
+                // Backward pass
+                model.zeroGrad();
+                loss.backward();
+
+                // Update parameters with Stochastic Gradient Descent
+                for (Value param : model.parameters()) {
+                    param.data -= learningRate * param.grad;
+                }
+            }
+            if (epoch % 1 == 0) {
+                System.out.printf("Epoch %d, Loss: %.8f%n", epoch, totalLoss);
+            }
+        }
+        
+        // Test trained model
+        for (int i = 0; i < X.length; i++) {
+            List<Value> inputs = new ArrayList<>();
+            for (double d : X[i]) {
+                inputs.add(new Value(d));
+            }
+            List<Value> out = model.forward(inputs);
+            System.out.printf("Input: %s -> Prediction: %.3f, Ground Truth: %d%n",
+                Arrays.toString(X[i]), out.get(0).data, y[i]);
+        }
     }
 }
