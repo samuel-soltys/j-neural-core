@@ -21,6 +21,12 @@ class Neuron {
         }
         return z.relu();
     }
+
+    public List<Value> parameters() {
+        List<Value> params = new ArrayList<>(w);
+        params.add(b);
+        return params;
+    }
 }
 
 class Layer {
@@ -40,6 +46,14 @@ class Layer {
         }
         return outputs;
     }
+
+    public List<Value> parameters() {
+        List<Value> params = new ArrayList<>();
+        for (Neuron neuron : neurons) {
+            params.addAll(neuron.parameters());
+        }
+        return params;
+    }
 }
 
 class MLP {
@@ -58,6 +72,14 @@ class MLP {
             outputs = layer.forward(outputs);
         }
         return outputs;
+    }
+
+    public List<Value> parameters() {
+        List<Value> params = new ArrayList<>();
+        for (Layer layer : layers) {
+            params.addAll(layer.parameters());
+        }
+        return params;
     }
 }
 
