@@ -15,9 +15,11 @@ public class Main {
         };
         int[] y = {1, 0, 1, 0, 1, 0};
         int[] layers = new int[]{3, 4, 4, 1};
-        
+
         BinaryClassifier classifier = new BinaryClassifier(layers);
-        classifier.train(X, y);
+        System.out.println("Model parameters count: " + classifier.getModelParametersCount());
+
+        classifier.train(X, y, 0.05, 200);
         
         // Test the model with new data
         double[][] testX = {
