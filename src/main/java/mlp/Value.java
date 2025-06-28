@@ -10,8 +10,9 @@ public class Value {
     public double grad;
     
     private Set<Value> prev;
-    private String op;
     private Runnable backward = () -> {};
+    @SuppressWarnings("unused") // String op is used for debugging
+    private String op;
 
     // Constructor for leaf node
     public Value(double data) {
