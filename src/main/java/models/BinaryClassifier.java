@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import mlp.MLP;
-import mlp.Value;
+import core.MLP;
+import core.Value;
 
 public class BinaryClassifier {
     private final MLP model;

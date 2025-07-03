@@ -29,5 +29,10 @@ public class Main {
         };
         int[] testY = {1, 0, 0};
         classifier.test(testX, testY);
+
+        // TO DO: Digits recognizer
+        // DigitRecognizer digitRecognizer = new DigitRecognizer();
+        // digitRecognizer.train("path/to/digits/train.csv");
+        // digitRecognizer.test("path/to/digits/test.csv");
     }
 }
