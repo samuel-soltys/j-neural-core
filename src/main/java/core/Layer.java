@@ -13,10 +13,9 @@ public class Layer {
         }
     }
 
-    public List<Value> forward(List<Value> inputs) {
+    public List<Value> forward(List<Value> inputs, Boolean isOutputLayer) {
         List<Value> outputs = new ArrayList<>();
         for (int i = 0; i < neurons.size(); i++) {
-            boolean isOutputLayer = (i == neurons.size() - 1);
             outputs.add(neurons.get(i).forward(inputs, isOutputLayer));
         }
         return outputs;

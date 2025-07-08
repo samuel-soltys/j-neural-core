@@ -15,8 +15,9 @@ public class MLP {
 
     public List<Value> forward(List<Value> inputs) {
         List<Value> outputs = inputs;
-        for(Layer layer : layers) {
-            outputs = layer.forward(outputs);
+        for(int i = 0; i < layers.size(); i++) {
+            Boolean isOutputLayer = (i == layers.size() - 1);
+            outputs = layers.get(i).forward(outputs, isOutputLayer);
         }
         return outputs;
     }
