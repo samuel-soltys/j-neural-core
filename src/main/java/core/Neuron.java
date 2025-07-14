@@ -22,7 +22,7 @@ public class Neuron {
             z = z.add(w.get(i).mul(inputs.get(i)));
         }
         if (isOutputLayer) {
-            return z.sigmoid();  // use sigmoid in output layer only
+            return z;  // Returning raw logits for output layer, change to z.sigmoid() if binary classification (for now assuming multi-class)
         } else {
             return z.relu();    // use ReLU in hidden layers
         }

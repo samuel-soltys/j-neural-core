@@ -18,6 +18,19 @@ public class Layer {
         for (int i = 0; i < neurons.size(); i++) {
             outputs.add(neurons.get(i).forward(inputs, isOutputLayer));
         }
+        // If this is the output layer, apply softmax 
+        if (isOutputLayer) {
+            Value sum = new Value(0.0);
+            for (Value o : outputs) {
+                sum = sum.add(o.exp());
+            }
+            
+            List<Value> outputsSoftmax = new ArrayList<>();
+            for (Value o : outputs) {
+                outputsSoftmax.add(o.exp().div(sum));
+            }
+            return outputsSoftmax;
+        }
         return outputs;
     }
 

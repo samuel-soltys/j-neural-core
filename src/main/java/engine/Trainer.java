@@ -47,20 +47,38 @@ public class Trainer {
 
                 // Forward pass
                 List<Value> outs = model.forward(inputs);
-                Value prediction = outs.get(0);
                 
-                // Calculating cross-entropy loss LOSS IMPLEMENTATION
-                Value groundTruth = new Value(y[i]);
-                Value loss = groundTruth.mul(prediction.log()).add(
-                    new Value(1.0).add(groundTruth.mul(new Value(-1.0))).mul(
-                        new Value(1.0).add(prediction.mul(new Value(-1.0))).log()
-                    )
-                ).mul(new Value(-1.0));
-                totalLoss += loss.data;
+                // If binary classification
+                if (outs.size() == 1) {
+                    Value prediction = outs.get(0);
 
-                // Backward pass
-                model.zeroGrad();
-                loss.backward();
+                    // Calculating binary cross-entropy loss
+                    Value groundTruth = new Value(y[i]);
+                    Value loss = groundTruth.mul(prediction.log()).add(
+                        new Value(1.0).add(groundTruth.mul(new Value(-1.0))).mul(
+                            new Value(1.0).add(prediction.mul(new Value(-1.0))).log()
+                        )
+                    ).mul(new Value(-1.0));
+                    totalLoss += loss.data;
+
+                    // Backward pass
+                    model.zeroGrad();
+                    loss.backward();
+                    
+                // Else multi-class classification
+                } else {
+                    // Assuming outs is softmaxed already and contains probabilities for each class
+                    // Takes the prediction for the class corresponding to y[i] (the ground truth label)
+                    Value prediction = outs.get(y[i]);
+
+                    // Cross-entropy loss: -log(p_correct_class)
+                    Value loss = prediction.log().mul(new Value(-1.0));
+                    totalLoss += loss.data;
+
+                    // Backward pass
+                    model.zeroGrad();
+                    loss.backward();
+                }
 
                 // Update parameters with Stochastic Gradient Descent
                 for (Value param : model.parameters()) {
@@ -86,8 +104,7 @@ public class Trainer {
                 inputs.add(new Value(d));
             }
             List<Value> out = model.forward(inputs);
-            System.out.printf("Input: %s -> Prediction: %.3f, Ground Truth: %d%n",
-                Arrays.toString(X[i]), out.get(0).data, y[i]);
+            System.out.println("Input: " + Arrays.toString(X[i]) + "-> Prediction: " + out + ", Ground Truth: " + y[i]);
         }
     }
 }

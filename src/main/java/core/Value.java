@@ -67,6 +67,30 @@ public class Value {
         return result;
     }
 
+    public Value exp() {
+        // Clamp input to avoid overflow/underflow in Math.exp
+        double safeInput = Math.max(-200, Math.min(200, this.data));
+        double expValue = Math.exp(safeInput);
+        Value result = new Value(expValue, Set.of(this), "exp");
+        result.backward = () -> {
+            this.grad += result.data * result.grad;
+        };
+        return result;
+    }
+
+    // Division by another Value object
+    public Value div(Value other) {
+        if (other.data == 0) {
+            throw new ArithmeticException("Division by zero");
+        }
+        Value result = new Value(this.data / other.data, Set.of(this, other), "/");
+        result.backward = () -> {
+            this.grad += (1.0 / other.data) * result.grad;
+            other.grad += (-this.data / (other.data * other.data)) * result.grad;
+        };
+        return result;
+    }
+
     // Activation functions
     public Value relu() {
         Value result = new Value((this.data < 0) ? 0 : this.data, Set.of(this), "ReLU");
