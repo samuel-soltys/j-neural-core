@@ -1,6 +1,7 @@
 package engine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import core.MLP;
@@ -37,8 +38,8 @@ public class Trainer {
         }        
         for (int epoch = 0; epoch < epochs; epoch++) {
             // learning rate decay 
-            // if (epoch > 100 && epoch % 100 == 0) {
-            //     learningRate *= 0.9; // Decay learning rate every 100 epochs
+            // if (epoch > 40 && epoch % 20 == 0) {
+            //     learningRate *= 0.8; // Decay learning rate every 20 epochs
             // }
             double totalLoss = 0.0;
             for (int i = 0; i < X.length; i++) {
@@ -51,8 +52,9 @@ public class Trainer {
                 // Forward pass
                 List<Value> outs = model.forward(inputs);
                 
-                // If binary classification
                 Value loss;
+                // If binary classification, calculate binary cross-entropy loss
+                // Assuming outs is a single output neuron with sigmoid activation
                 if (outs.size() == 1) {
                     Value prediction = outs.get(0);
 
@@ -64,10 +66,10 @@ public class Trainer {
                         )
                     ).mul(new Value(-1.0));
                     totalLoss += loss.data;
-                // Else multi-class classification
+                // Else multi-class classification, calculate categorical cross-entropy loss
+                // Assuming outs is softmaxed already and contains probabilities for each class
                 } else {
-                    // Assuming outs is softmaxed already and contains probabilities for each class
-                    // Takes the prediction for the class corresponding to y[i] (the ground truth label)
+                    // Takes the prediction for the class number corresponding to y[i] (the ground truth label)
                     Value prediction = outs.get(y[i]);
 
                     // Cross-entropy loss: -log(p_correct_class)
@@ -105,13 +107,14 @@ public class Trainer {
                 inputs.add(new Value(d));
             }
             List<Value> out = model.forward(inputs);
-
+            System.out.println("Input: " + Arrays.toString(X[i]) + "-> Prediction: " + out + ", Ground Truth: " + y[i]);
+            
             int predicted;
+            // If binary classification, threshold at 0.5
             if (out.size() == 1) {
-                // Binary classification: threshold at 0.5
                 predicted = out.get(0).data >= 0.5 ? 1 : 0;
+            // Else Multi-class: pick the class with the highest probability
             } else {
-                // Multi-class: pick the class with the highest probability
                 double max = Double.NEGATIVE_INFINITY;
                 int maxIdx = -1;
                 for (int j = 0; j < out.size(); j++) {
@@ -122,7 +125,6 @@ public class Trainer {
                 }
                 predicted = maxIdx;
             }
-
             if (predicted == y[i]) {
                 correct++;
             }

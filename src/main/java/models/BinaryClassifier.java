@@ -30,6 +30,7 @@ public class BinaryClassifier {
             {-2.0, -1.5, -1.0}
         };
         int[] testY = {1, 0, 0};
-        trainer.test(testX, testY);
+        double accuracy = trainer.test(testX, testY);
+        System.out.println("Test accuracy: " + accuracy);
     }
 }
