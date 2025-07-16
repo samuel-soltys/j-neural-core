@@ -1,7 +1,5 @@
 package models;
 
-import java.util.Arrays;
-
 import core.MLP;
 import engine.Trainer;
 import data.DigitDataLoader;
@@ -27,8 +25,6 @@ public class DigitRecognizer {
         }
 
         System.out.println("Training data loaded: " + X.length + " images, " + y.length + " labels.");
-        System.out.println("First image data: " + Arrays.toString(X[0]));
-        System.out.println("First label: " + y[0]);
 
         int[] layersDigit = new int[]{64, 12, 12, 10};
         MLP modelDigit = new MLP(layersDigit);
@@ -49,6 +45,7 @@ public class DigitRecognizer {
             e.printStackTrace();
         }
 
-        trainer.test(testX, testY);
+        double accuracy = trainer.test(testX, testY);
+        System.out.println("Test accuracy: " + accuracy);
     }
 }

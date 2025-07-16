@@ -1,7 +1,6 @@
 package engine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import core.MLP;
@@ -37,6 +36,10 @@ public class Trainer {
             throw new IllegalArgumentException("Output array must not be empty.");
         }        
         for (int epoch = 0; epoch < epochs; epoch++) {
+            // learning rate decay 
+            // if (epoch > 100 && epoch % 100 == 0) {
+            //     learningRate *= 0.9; // Decay learning rate every 100 epochs
+            // }
             double totalLoss = 0.0;
             for (int i = 0; i < X.length; i++) {
                 // Wrap inputs in Value objects
@@ -49,22 +52,18 @@ public class Trainer {
                 List<Value> outs = model.forward(inputs);
                 
                 // If binary classification
+                Value loss;
                 if (outs.size() == 1) {
                     Value prediction = outs.get(0);
 
                     // Calculating binary cross-entropy loss
                     Value groundTruth = new Value(y[i]);
-                    Value loss = groundTruth.mul(prediction.log()).add(
+                    loss = groundTruth.mul(prediction.log()).add(
                         new Value(1.0).add(groundTruth.mul(new Value(-1.0))).mul(
                             new Value(1.0).add(prediction.mul(new Value(-1.0))).log()
                         )
                     ).mul(new Value(-1.0));
                     totalLoss += loss.data;
-
-                    // Backward pass
-                    model.zeroGrad();
-                    loss.backward();
-                    
                 // Else multi-class classification
                 } else {
                     // Assuming outs is softmaxed already and contains probabilities for each class
@@ -72,13 +71,13 @@ public class Trainer {
                     Value prediction = outs.get(y[i]);
 
                     // Cross-entropy loss: -log(p_correct_class)
-                    Value loss = prediction.log().mul(new Value(-1.0));
+                    loss = prediction.log().mul(new Value(-1.0));
                     totalLoss += loss.data;
-
-                    // Backward pass
-                    model.zeroGrad();
-                    loss.backward();
                 }
+                
+                // Backward pass
+                model.zeroGrad();
+                loss.backward();
 
                 // Update parameters with Stochastic Gradient Descent
                 for (Value param : model.parameters()) {
@@ -97,14 +96,39 @@ public class Trainer {
      * @param X Input features, a 2D array where each row is a sample.
      * @param y Labels, a 1D array where each element corresponds to the label of the sample in X.
      */
-    public void test(double[][] X, int[] y) {
+    public double test(double[][] X, int[] y) {
+        double accuracy = 0.0;
+        int correct = 0;
         for (int i = 0; i < X.length; i++) {
             List<Value> inputs = new ArrayList<>();
             for (double d : X[i]) {
                 inputs.add(new Value(d));
             }
             List<Value> out = model.forward(inputs);
-            System.out.println("Input: " + Arrays.toString(X[i]) + "-> Prediction: " + out + ", Ground Truth: " + y[i]);
+
+            int predicted;
+            if (out.size() == 1) {
+                // Binary classification: threshold at 0.5
+                predicted = out.get(0).data >= 0.5 ? 1 : 0;
+            } else {
+                // Multi-class: pick the class with the highest probability
+                double max = Double.NEGATIVE_INFINITY;
+                int maxIdx = -1;
+                for (int j = 0; j < out.size(); j++) {
+                    if (out.get(j).data > max) {
+                        max = out.get(j).data;
+                        maxIdx = j;
+                    }
+                }
+                predicted = maxIdx;
+            }
+
+            if (predicted == y[i]) {
+                correct++;
+            }
         }
+        
+        accuracy = (double) correct / X.length;
+        return accuracy;   
     }
 }
