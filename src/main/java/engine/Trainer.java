@@ -1,7 +1,7 @@
 package engine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+// import java.util.Arrays;
 import java.util.List;
 
 import core.MLP;
@@ -38,8 +38,9 @@ public class Trainer {
         }        
         for (int epoch = 0; epoch < epochs; epoch++) {
             // learning rate decay 
-            // if (epoch > 40 && epoch % 20 == 0) {
-            //     learningRate *= 0.8; // Decay learning rate every 20 epochs
+            // if (epoch > 30 && epoch % 10 == 0) {
+            // if (epoch == 75) {
+            //     learningRate *= 0.1; // Decay learning rate every 10 epochs
             // }
             double totalLoss = 0.0;
             for (int i = 0; i < X.length; i++) {
@@ -107,7 +108,7 @@ public class Trainer {
                 inputs.add(new Value(d));
             }
             List<Value> out = model.forward(inputs);
-            System.out.println("Input: " + Arrays.toString(X[i]) + "-> Prediction: " + out + ", Ground Truth: " + y[i]);
+            // System.out.println("Input: " + Arrays.toString(X[i]) + "-> Prediction: " + out + ", Ground Truth: " + y[i]);
             
             int predicted;
             // If binary classification, threshold at 0.5
@@ -127,6 +128,8 @@ public class Trainer {
             }
             if (predicted == y[i]) {
                 correct++;
+            } else {
+                System.out.printf("Misclassified sample %d: Predicted %d, Actual %d%n", i, predicted, y[i]);
             }
         }
         

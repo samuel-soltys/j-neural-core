@@ -50,6 +50,13 @@ public class DigitDataLoader {
         double[][] images = imageList.toArray(new double[0][64]);
         int[] labels = labelList.stream().mapToInt(Integer::intValue).toArray();
 
+        // Normalizing image values to [0, 1] for better training
+        for (int i = 0; i < images.length; i++) {
+            for (int j = 0; j < images[i].length; j++) {
+                images[i][j] /= 16.0;
+            }
+        }
+
         return new DataSet(images, labels);
     }
 }

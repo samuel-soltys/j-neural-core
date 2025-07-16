@@ -26,13 +26,13 @@ public class DigitRecognizer {
 
         System.out.println("Training data loaded: " + X.length + " images, " + y.length + " labels.");
 
-        int[] layersDigit = new int[]{64, 12, 12, 10};
+        int[] layersDigit = new int[]{64, 64, 32, 10};
         MLP modelDigit = new MLP(layersDigit);
 
         Trainer trainer = new Trainer(modelDigit);
         System.out.println("Model parameters count: " + trainer.getModelParametersCount());
 
-        trainer.train(X, y, 0.001, 200);
+        trainer.train(X, y, 0.007, 150);
         
         // Loading test digit data
         double[][] testX = null;   // test images
