@@ -25,8 +25,10 @@ public class Trainer {
      * @param y Labels, a 1D array where each element corresponds to the label of the sample in X.
      * @param learningRate Learning rate for the optimizer.
      * @param epochs Number of training epochs.
+     * @param X_val Validation input features (optional, can be null)
+     * @param y_val Validation labels (optional, can be null)
      */
-    public void train(double[][] X, int[] y, double learningRate, int epochs) {
+    public void train(double[][] X, int[] y, double learningRate, int epochs, double[][] X_val, int[] y_val) {
         if (X.length != y.length) {
             throw new IllegalArgumentException("Input and output arrays must have the same length.");
         }
@@ -37,12 +39,12 @@ public class Trainer {
             throw new IllegalArgumentException("Output array must not be empty.");
         }        
         for (int epoch = 0; epoch < epochs; epoch++) {
-            // learning rate decay 
-            // if (epoch > 30 && epoch % 10 == 0) {
-            // if (epoch == 75) {
-            //     learningRate *= 0.1; // Decay learning rate every 10 epochs
-            // }
             double totalLoss = 0.0;
+            double totalValLoss = 0.0;
+            // Learning rate decay 
+            if (epoch > 100 && epoch % 10 == 0) {
+                learningRate *= 0.9; 
+            }
             for (int i = 0; i < X.length; i++) {
                 // Wrap inputs in Value objects
                 List<Value> inputs = new ArrayList<>();
@@ -58,25 +60,19 @@ public class Trainer {
                 // Assuming outs is a single output neuron with sigmoid activation
                 if (outs.size() == 1) {
                     Value prediction = outs.get(0);
-
-                    // Calculating binary cross-entropy loss
                     Value groundTruth = new Value(y[i]);
-                    loss = groundTruth.mul(prediction.log()).add(
-                        new Value(1.0).add(groundTruth.mul(new Value(-1.0))).mul(
-                            new Value(1.0).add(prediction.mul(new Value(-1.0))).log()
-                        )
-                    ).mul(new Value(-1.0));
+                    loss = binaryCE(groundTruth, prediction);
                     totalLoss += loss.data;
                 // Else multi-class classification, calculate categorical cross-entropy loss
                 // Assuming outs is softmaxed already and contains probabilities for each class
                 } else {
                     // Takes the prediction for the class number corresponding to y[i] (the ground truth label)
                     Value prediction = outs.get(y[i]);
-
-                    // Cross-entropy loss: -log(p_correct_class)
                     loss = prediction.log().mul(new Value(-1.0));
                     totalLoss += loss.data;
                 }
+                
+                loss = l2Regularization(loss);
                 
                 // Backward pass
                 model.zeroGrad();
@@ -87,10 +83,66 @@ public class Trainer {
                     param.data -= learningRate * param.grad;
                 }
             }
-            if (epoch % 10 == 0 || epoch == epochs - 1) {
-                System.out.printf("Epoch %d, Loss: %.8f%n", epoch, totalLoss);
+            // If validation dataset provided
+            if (X_val != null) {
+                // Calculate validation loss
+                for (int i = 0; i < X_val.length; i++) {
+                    Value valLoss;
+                    List<Value> valInputs = new ArrayList<>();
+                    for (double d : X_val[i]) {
+                        valInputs.add(new Value(d));
+                    }
+
+                    List<Value> valOuts = model.forward(valInputs);
+
+                    if (valOuts.size() == 1) {
+                        // Binary classification loss
+                        Value valPrediction = valOuts.get(0);
+                        Value groundTruth = new Value(y_val[i]);
+                        valLoss = binaryCE(groundTruth, valPrediction);
+                    } else {
+                        // Multi-class loss
+                        Value valPrediction = valOuts.get(y_val[i]);
+                        valLoss = valPrediction.log().mul(new Value(-1.0));
+                    }
+                    totalValLoss += valLoss.data;
+                }
+            }
+
+            if (epoch % 1 == 0 || epoch == epochs - 1) {
+                System.out.println("-------------------");
+                System.out.println("Epoch " + epoch + ":");
+                System.out.printf("Training loss: %.8f%n", totalLoss);
+                double avgTrainLoss = totalLoss / X.length;
+                System.out.printf("avgTrainLoss: %.8f%n", avgTrainLoss);
+                
+                if (X_val != null) {
+                    System.out.printf("Validation Loss: %.8f%n", totalValLoss);
+                    double avgValLoss = totalValLoss / X_val.length;
+                    System.out.printf("avgValLoss: %.8f%n", avgValLoss);
+                }
+
             }
         }
+    }
+    // Binary Cross Entropy helper function
+    private Value binaryCE(Value groundTruth, Value prediction) {
+        return groundTruth.mul(prediction.log()).add(
+            new Value(1.0).add(groundTruth.mul(new Value(-1.0))).mul(
+                new Value(1.0).add(prediction.mul(new Value(-1.0))).log()
+            )
+        ).mul(new Value(-1.0));
+    }
+    // L2 Regularization helper function
+    private Value l2Regularization(Value loss) {
+        double lambda = 1e-4;
+        Value l2Penalty = new Value(0.0);
+        for (Value param : model.weights()) {
+            l2Penalty = l2Penalty.add(param.pow(2.0));
+        }
+        Value l2Loss = new Value(lambda).mul(l2Penalty);
+        loss = loss.add(l2Loss);
+        return loss;
     }
 
     /**
@@ -130,6 +182,7 @@ public class Trainer {
                 correct++;
             } else {
                 System.out.printf("Misclassified sample %d: Predicted %d, Actual %d%n", i, predicted, y[i]);
+                System.out.println("Wrong prediction value: " + out);
             }
         }
         

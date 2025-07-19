@@ -24,7 +24,19 @@ public class DigitRecognizer {
             return;
         }
 
+        // Loading validation digit data
+        double[][] X_val = null;   // validation images
+        int[] y_val = null;     // validation labels
+        try {
+            DataSet val = DigitDataLoader.load("/data/digits_validation.csv");
+            X_val = val.images;
+            y_val = val.labels;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         System.out.println("Training data loaded: " + X.length + " images, " + y.length + " labels.");
+        System.out.println("Validation data loaded: " + X_val.length + " images, " + y_val.length + " labels.");
 
         int[] layersDigit = new int[]{64, 64, 32, 10};
         MLP modelDigit = new MLP(layersDigit);
@@ -32,7 +44,7 @@ public class DigitRecognizer {
         Trainer trainer = new Trainer(modelDigit);
         System.out.println("Model parameters count: " + trainer.getModelParametersCount());
 
-        trainer.train(X, y, 0.007, 150);
+        trainer.train(X, y, 0.008, 200, X_val, y_val);
         
         // Loading test digit data
         double[][] testX = null;   // test images

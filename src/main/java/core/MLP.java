@@ -29,6 +29,13 @@ public class MLP {
         }
         return params;
     }
+    public List<Value> weights() {
+        List<Value> weights = new ArrayList<>();
+        for (Layer layer : layers) {
+            weights.addAll(layer.weights());
+        }
+        return weights;
+    }
 
     public void zeroGrad() {
         for (Value p : parameters()) {

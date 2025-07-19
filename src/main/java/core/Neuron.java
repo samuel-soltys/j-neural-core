@@ -35,4 +35,8 @@ public class Neuron {
         params.add(b);
         return params;
     }
+    public List<Value> weights() {
+        List<Value> weights = new ArrayList<>(w);
+        return weights;
+    }
 }

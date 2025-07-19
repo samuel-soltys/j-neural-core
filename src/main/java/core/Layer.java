@@ -45,4 +45,11 @@ public class Layer {
         }
         return params;
     }
+    public List<Value> weights() {
+        List<Value> weights = new ArrayList<>();
+        for (Neuron neuron : neurons) {
+            weights.addAll(neuron.weights());
+        }
+        return weights;
+    }
 }
