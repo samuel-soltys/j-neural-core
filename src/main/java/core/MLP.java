@@ -1,5 +1,10 @@
 package core;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +40,30 @@ public class MLP {
             weights.addAll(layer.weights());
         }
         return weights;
+    }
+
+    public void saveModel(String filePath) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+            this.parameters().forEach(param -> {
+                writer.println(param.data);
+            });
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Error saving model: " + e.getMessage());
+        }
+    }
+    public void loadModel(String filePath) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            List<Value> params = this.parameters();
+            int i = 0;
+            while ((line = reader.readLine()) != null && i < params.size()) {
+                params.get(i).data = Double.parseDouble(line);
+                i++;
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading model: " + e.getMessage());
+        }
     }
 
     public void zeroGrad() {

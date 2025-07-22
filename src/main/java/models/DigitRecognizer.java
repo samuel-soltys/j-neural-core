@@ -18,6 +18,7 @@ public class DigitRecognizer {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("Training data loaded: " + X.length + " images, " + y.length + " labels.");
 
         if (X == null || y == null) {
             System.err.println("Null training data.");
@@ -35,7 +36,6 @@ public class DigitRecognizer {
             e.printStackTrace();
         }
 
-        System.out.println("Training data loaded: " + X.length + " images, " + y.length + " labels.");
         System.out.println("Validation data loaded: " + X_val.length + " images, " + y_val.length + " labels.");
 
         int[] layersDigit = new int[]{64, 64, 32, 10};
@@ -44,6 +44,8 @@ public class DigitRecognizer {
         Trainer trainer = new Trainer(modelDigit);
         System.out.println("Model parameters count: " + trainer.getModelParametersCount());
 
+        // String modelPath = "./digits_classifier.txt";
+        // modelDigit.loadModel(modelPath);
         trainer.train(X, y, 0.008, 200, X_val, y_val);
         
         // Loading test digit data
