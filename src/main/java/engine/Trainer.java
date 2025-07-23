@@ -123,6 +123,18 @@ public class Trainer {
                 }
 
             }
+            // Early stopping: check if 'Q' is pressed
+            try {
+                if (System.in.available() > 0) {
+                    int ch = System.in.read();
+                    if (ch == 'Q' || ch == 'q') {
+                        System.out.println("Early stopping triggered by user.");
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                // Ignore input errors
+            }
         }
     }
     // Binary Cross Entropy helper function
@@ -182,7 +194,7 @@ public class Trainer {
                 correct++;
             } else {
                 System.out.printf("Misclassified sample %d: Predicted %d, Actual %d%n", i, predicted, y[i]);
-                System.out.println("Wrong prediction value: " + out);
+                System.out.println("Wrong prediction probability: " + out.get(predicted).data + ", Expected value probability: " + out.get(y[i]).data);
             }
         }
         

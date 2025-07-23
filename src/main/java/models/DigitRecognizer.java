@@ -44,9 +44,9 @@ public class DigitRecognizer {
         Trainer trainer = new Trainer(modelDigit);
         System.out.println("Model parameters count: " + trainer.getModelParametersCount());
 
-        // String modelPath = "./digits_classifier.txt";
-        // modelDigit.loadModel(modelPath);
-        trainer.train(X, y, 0.008, 200, X_val, y_val);
+        String modelPath = "src/main/java/models/DigitRecognizer_0.96438.model";
+        modelDigit.loadModel(modelPath);
+        // trainer.train(X, y, 0.007, 150, X_val, y_val);
         
         // Loading test digit data
         double[][] testX = null;   // test images
@@ -59,7 +59,11 @@ public class DigitRecognizer {
             e.printStackTrace();
         }
 
+        System.out.println("Test data loaded: " + testX.length + " images, " + testY.length + " labels.");
+
         double accuracy = trainer.test(testX, testY);
         System.out.println("Test accuracy: " + accuracy);
+        // String modelPath = "src/main/java/models/DigitRecognizer.model";
+        // modelDigit.saveModel(modelPath);
     }
 }
