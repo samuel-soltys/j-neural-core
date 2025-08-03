@@ -27,8 +27,11 @@ public class Trainer {
      * @param epochs Number of training epochs.
      * @param X_val Validation input features (optional, can be null)
      * @param y_val Validation labels (optional, can be null)
+     * @param learningRateDecay Whether to apply learning rate decay.
+     * @param decayStartEpoch Epoch to start applying learning rate decay.
+     * @param decayEvery How often to apply learning rate decay (every n epochs).
      */
-    public void train(double[][] X, int[] y, double learningRate, int epochs, double[][] X_val, int[] y_val) {
+    public void train(double[][] X, int[] y, double learningRate, int epochs, double[][] X_val, int[] y_val, boolean learningRateDecay, int decayStartEpoch, int decayEvery) {
         if (X.length != y.length) {
             throw new IllegalArgumentException("Input and output arrays must have the same length.");
         }
@@ -42,7 +45,7 @@ public class Trainer {
             double totalLoss = 0.0;
             double totalValLoss = 0.0;
             // Learning rate decay 
-            if (epoch > 100 && epoch % 10 == 0) {
+            if (learningRateDecay && epoch > decayStartEpoch && epoch % decayEvery == 0) {
                 learningRate *= 0.9; 
             }
             for (int i = 0; i < X.length; i++) {

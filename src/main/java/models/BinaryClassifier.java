@@ -21,7 +21,7 @@ public class BinaryClassifier {
         Trainer trainer = new Trainer(modelBinary);
         System.out.println("Model parameters count: " + trainer.getModelParametersCount());
 
-        trainer.train(X, y, 0.05, 10, null, null);
+        trainer.train(X, y, 0.05, 10, null, null, false, 0, 0);
         
         // Test the model with new data
         double[][] testX = {

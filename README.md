@@ -77,6 +77,7 @@ The best test accuracy of **96.34%** was achieved **under 30 minutes of training
 * 150 epochs
 * 64 input neurons, 2 hidden layers of [64, 32] neurons, 10 output neurons
 * L2 regularization with lambda = 1e-4
+* After 100 epochs learning rate decay by 0.9 every 10 epochs
 * 6570 model parameters total
 
 #### Training & Validation Loss Curve

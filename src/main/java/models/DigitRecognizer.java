@@ -47,7 +47,7 @@ public class DigitRecognizer {
         // Loading saved model, change this if you want to train your own
         String modelPath = "src/main/java/models/DigitRecognizer_0.96438.model";
         modelDigit.loadModel(modelPath);
-        // trainer.train(X, y, 0.007, 150, X_val, y_val);
+        // trainer.train(X, y, 0.007, 150, X_val, y_val, true, 100, 10);
         
         // Loading test digit data
         double[][] testX = null;   // test images
