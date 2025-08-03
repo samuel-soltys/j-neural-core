@@ -44,6 +44,7 @@ public class DigitRecognizer {
         Trainer trainer = new Trainer(modelDigit);
         System.out.println("Model parameters count: " + trainer.getModelParametersCount());
 
+        // Loading saved model, change this if you want to train your own
         String modelPath = "src/main/java/models/DigitRecognizer_0.96438.model";
         modelDigit.loadModel(modelPath);
         // trainer.train(X, y, 0.007, 150, X_val, y_val);
