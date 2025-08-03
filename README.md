@@ -81,6 +81,7 @@ The best test accuracy of **96.34%** was achieved **under 30 minutes of training
 
 #### Training & Validation Loss Curve
 Loss curve is displayed for the **first 50 epochs** out of total 150 epochs to better illustrate the initial convergence:
+
 <img src="assets/training_loss_graph_50_epochs.png" alt="Training Loss Curve" width="600"/>
 
 
@@ -101,10 +102,12 @@ Out of 1123 test samples, only 40 of them were not classified correctly. Most co
 
 ### Sample Predictions
 
-Correctly classified digits:</br>
+Correctly classified digits:
+
 <img src="assets/correct_grid.jpg" alt="Correct Examples" width="600"/>
 
-Misclassified digits with predictions:</br>
+Misclassified digits with predictions:
+
 <img src="assets/misclassified_grid.jpg" alt="Misclassified Examples" width="600"/>
 
 
