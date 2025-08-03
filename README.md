@@ -80,13 +80,13 @@ The best test accuracy of **96.34%** was achieved **under 30 minutes of training
 * After 100 epochs learning rate decay by 0.9 every 10 epochs
 * 6570 model parameters total
 
+Such accuracy is expected for this dataset as stated in the [source of the dataset](https://archive.ics.uci.edu/ml/datasets/Optical+Recognition+of+Handwritten+Digits). It is most likely limited by the reduced dimensionality of the input data and by the architecture of the created classifier model.
+
 #### Training & Validation Loss Curve
 Loss curve is displayed for the **first 50 epochs** out of total 150 epochs to better illustrate the initial convergence:
 
 <img src="assets/training_loss_graph_50_epochs.png" alt="Training Loss Curve" width="600"/>
 
-
-Such accuracy is expected for this dataset as stated in the [source of the dataset](https://archive.ics.uci.edu/ml/datasets/Optical+Recognition+of+Handwritten+Digits). It is most likely limited by the reduced dimensionality of the input data and by the architecture of the created classifier model.
 
 The final loss data were:
 * **Total training loss** = 11.22817344
