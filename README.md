@@ -53,6 +53,13 @@ j-neural-core/
 
 ## 📊 DigitRecognizer
 
+🔗 **Live demo:** [https://samuel-soltys.github.io/digit-classifier](https://samuel-soltys.github.io/digit-classifier)
+
+The live web demo lets you test the digit recognition model directly in your browser. It features:
+- A canvas where you can draw your own digits (0–9) for real-time recognition.
+- The trained neural network model is ported to JavaScript, running entirely client-side.
+- Instant feedback on your drawn digit, showing the model's prediction.
+
 ### Dataset
 
 5620 samples split into:
